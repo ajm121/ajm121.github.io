@@ -3,16 +3,40 @@
 <head>
     <meta charset="utf-8">
     <title>입지분석</title>
+    <style>
+.map_wrap, .map_wrap * {margin:0;padding:0;font-family:'Malgun Gothic',dotum,'돋움',sans-serif;font-size:12px;}
+.map_wrap a, .map_wrap a:hover, .map_wrap a:active{color:#000;text-decoration: none;}
+.map_wrap {position:relative;width:100%;height:200px;}
+#menu_wrap {position:absolute;top:0;left:0;bottom:0;width:250px;margin:10px 0 30px 10px;padding:5px;overflow-y:auto;background:rgba(255, 255, 255, 0.7);z-index: 1;font-size:12px;border-radius: 10px;}
+.bg_white {background:#fff;}
+#menu_wrap .option{text-align: center;}
+#menu_wrap .option p {margin:10px 0;}  
+#menu_wrap .option button {margin-left:5px;}
+</style>
 </head>
+
 <body>
+<div class="map_wrap">
+    <div id="map" style="width:100%;height:100vh;position:relative;overflow:hidden;"></div>
 
-<div id="map" style="width:100%;height:100vh;"></div>
-
-<p>
-    <input type="checkbox" id="chkUseDistrict" onchange="setOverlayMapTypeId()" /> 지적편집도 정보 보기
-    <input type="checkbox" id="chkTerrain" onchange="setOverlayMapTypeId()" /> 지형정보 보기 
-</p>
-
+    <div id="menu_wrap" class="bg_white">
+        <div class="option">
+            <div>
+                <form onsubmit="searchPlaces(); return false;">
+                    주거 반경(m) : <input type="text" value="2000" id="a1" size="15"> <br>
+                    교육 반경(m) : <input type="text" value="300" id="a2" size="15"> <br> <br>
+                    도로명 주소  : <input type="text" id="a3" size="20"> <br> <br>
+                    지적편집도 <input type="checkbox" id="chkUseDistrict" onchange="setOverlayMapTypeId()" />
+                    지형정보 <input type="checkbox" id="chkTerrain" onchange="setOverlayMapTypeId()" /> <br>
+                    <br>
+                    <button type="submit" class="btn btn-success" onclick="ajm();">검색</button>
+                </form>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div> 
+  
 <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=b0e08f4ae7959b49faa1e188252ea1aa&libraries=services"></script>
 <script>
 
@@ -143,16 +167,5 @@ function displayMarker(place) {
 }
 
 </script>
-<label for="a1">주거 반경(m): </label>
-<input type="text" id="a1" value="2000">
-
-<label for="a2">교육 반경(m): </label>
-<input type="text" id="a2" value="300">
-
-<label for="a3">도로명 주소: </label>
-<input type="text" id="a3">
-
-<button type="button" class="btn btn-success" onclick="ajm();">검색</button>
-
 </body>
 </html>
