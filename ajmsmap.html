@@ -37,7 +37,7 @@
     </div>
 </div> 
   
-<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=app_key&libraries=services"></script>
+<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=${{ secrets.APP_KEY }}&libraries=services"></script>
 <script>
 
 var category1 = ["SC4", "SW8"]; // 학교, 지하철 카테고리
@@ -46,7 +46,8 @@ var category2 = ["MT1", "CT1", "HP8", "PO3"]; // 상업, 문화, 병원, 공공 
 var mapContainer = document.getElementById('map'); // 지도를 표시할 div 
 var mapOption = {
     center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-    level: 3 // 지도의 확대 레벨
+    level: 3, // 지도의 확대 레벨
+    appKey: process.env.APP_KEY // .env 파일에서 앱 키 가져오기
 };
 
 // 지도를 생성합니다    
@@ -78,34 +79,51 @@ function setOverlayMapTypeId() {
 
 var geocoder = new kakao.maps.services.Geocoder();
 
+var infowindow = new kakao.maps.InfoWindow({
+    content: ''
+});
+var currentMarkers = []; // 이전 마커들을 저장할 배열
+var currentCircles = []; // 이전 원들을 저장할 배열
+
 function ajm() {
+    // 이전에 생성된 마커와 원을 삭제합니다.
+    for (var i = 0; i < currentMarkers.length; i++) {
+        currentMarkers[i].setMap(null);
+    }
+    currentMarkers = [];
+
+    for (var i = 0; i < currentCircles.length; i++) {
+        currentCircles[i].setMap(null);
+    }
+    currentCircles = [];
+
     var r1 = document.getElementById("a1").value;
     var r2 = document.getElementById("a2").value;
     var juso = document.getElementById("a3").value;
+
+    var marker0;
 
     geocoder.addressSearch(juso, function(result, status) {
         if (status === kakao.maps.services.Status.OK) {
             var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-            var marker0 = new kakao.maps.Marker({
+            marker0 = new kakao.maps.Marker({
                 map: map,
                 position: coords
             });
 
-            var infowindow = new kakao.maps.InfoWindow({
-                content: '<div style="width:150px;text-align:center;padding:6px 0;">사업지</div>'
-            });
+            infowindow.setContent('<div style="width:150px;text-align:center;padding:6px 0;">사업지</div>');
             infowindow.open(map, marker0);
 
             map.setCenter(coords);
 
-            var marker1 = new daum.maps.Marker({
+            var marker1 = new kakao.maps.Marker({
                 position: coords,
                 title: "마커1",
                 map: map
             });
 
-            var circle2 = new daum.maps.Circle({
+            var circle2 = new kakao.maps.Circle({
                 map: map,
                 center: coords,
                 radius: r2,
@@ -117,7 +135,7 @@ function ajm() {
                 fillOpacity: 0.5
             });
 
-            var circle1 = new daum.maps.Circle({
+            var circle1 = new kakao.maps.Circle({
                 map: map,
                 center: coords,
                 radius: r1,
@@ -136,6 +154,9 @@ function ajm() {
             for (var j = 0; j < category2.length; j++) {
                 searchPlaces(category2[j], r2, coords);
             }
+
+            currentMarkers.push(marker0, marker1);
+            currentCircles.push(circle1, circle2);
         }
     });
 }
@@ -164,7 +185,10 @@ function displayMarker(place) {
         infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
         infowindow.open(map, marker);
     });
+
+    currentMarkers.push(marker);
 }
+
 
 </script>
 </body>
